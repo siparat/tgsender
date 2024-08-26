@@ -1,0 +1,24 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model UserModel {
+    id           Int            @id @default(autoincrement())
+    login        String         @unique
+    passwordHash String
+    channels     ChannelModel[]
+}
+
+model ChannelModel {
+    id     Int       @id @default(autoincrement())
+    name   String
+    avatar String
+    token  String
+    userId Int
+    user   UserModel @relation(references: [id], fields: [userId])
+}
