@@ -54,6 +54,12 @@ export class ChannelController {
 	}
 
 	@UseGuards(JwtAuthGuard)
+	@Get('all')
+	async getAll(@User() user: UserModel): Promise<ChannelModel[]> {
+		return this.database.channelModel.findMany({ where: { userId: user.id } });
+	}
+
+	@UseGuards(JwtAuthGuard)
 	@Get(':id')
 	async getById(@Param('id', ParseIntPipe) id: number, @User() user: UserModel): Promise<ChannelModel> {
 		const channel = await this.database.channelModel.findUnique({ where: { id } });
