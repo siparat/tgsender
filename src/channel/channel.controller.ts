@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	FileTypeValidator,
 	ForbiddenException,
 	Get,
@@ -70,5 +71,11 @@ export class ChannelController {
 			throw new ForbiddenException(ChannelErrorMssages.FORBIDDEN);
 		}
 		return channel;
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Delete(':id')
+	async deleteChannel(@Param('id', ParseIntPipe) id: number, @User() user: UserModel): Promise<ChannelModel> {
+		return this.channelService.deleteChannel(id, user.id);
 	}
 }

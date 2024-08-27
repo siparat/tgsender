@@ -1,9 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ensureDir, writeFile } from 'fs-extra';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ensureDir, writeFile, remove } from 'fs-extra';
 import { randomUUID } from 'crypto';
 import { join } from 'path';
 import * as sharp from 'sharp';
-import { SERVE_ROOT_PATH, UPLOAD_ROOT_PATH } from './file.constants';
+import { FileErrorMessages, SERVE_ROOT_PATH, UPLOAD_ROOT_PATH } from './file.constants';
 import { FileResponse } from './file.interfaces';
 
 @Injectable()
@@ -23,6 +23,20 @@ export class FileService {
 			throw new InternalServerErrorException('Error writing the file: ' + e.message);
 		}
 	}
+
+	async deleteImageFromUrl(url: string): Promise<void> {
+		const filename = url.split('/').at(-1);
+		if (!filename || !url.startsWith(SERVE_ROOT_PATH)) {
+			throw new NotFoundException(FileErrorMessages.NOT_FOUND);
+		}
+		const path = join(UPLOAD_ROOT_PATH, filename);
+		try {
+			await remove(path);
+		} catch (e) {
+			throw new InternalServerErrorException('Error deleted the file: ' + e.message);
+		}
+	}
+
 	private convertToAvif(buffer: Buffer): Promise<Buffer> {
 		return sharp(buffer).avif({ quality: 75 }).toBuffer();
 	}
