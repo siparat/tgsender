@@ -9,9 +9,12 @@ datasource db {
 
 model UserModel {
     id           Int            @id @default(autoincrement())
+    tgId         Int?           @unique
     login        String         @unique
     passwordHash String
+    token        String         @unique @default(uuid())
     channels     ChannelModel[]
+    messages     MessageModel[]
 }
 
 model ChannelModel {
@@ -21,4 +24,31 @@ model ChannelModel {
     token  String
     userId Int
     user   UserModel @relation(references: [id], fields: [userId])
+}
+
+model MessageModel {
+    id        Int         @id @default(autoincrement())
+    label     String?
+    userTgId  Int
+    user      UserModel   @relation(references: [tgId], fields: [userTgId])
+
+    text      String?
+    entities  Json[]
+    photo     Json?
+    audio     Json?
+    video     Json?
+    animation Json?
+    voice     Json?
+    document  Json?
+    type      MessageType
+}
+
+enum MessageType {
+    text
+    photo
+    audio
+    video
+    animation
+    voice
+    document
 }
