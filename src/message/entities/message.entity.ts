@@ -25,7 +25,7 @@ export class MessageEntity {
 
 		this.text = message.text || undefined;
 		this.entities = message.entities as any;
-		this.photo = message.photo as any;
+		this.photo = message.photo && ([message.photo].flat() as any);
 		this.audio = message.audio as any;
 		this.video = message.video as any;
 		this.animation = message.animation as any;

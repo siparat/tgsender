@@ -14,7 +14,6 @@ import {
 } from 'src/typeguards/message.typeguards';
 import { MessageType } from '@prisma/client';
 import { BotStaticMessages } from './bot.constants';
-import { MessageService } from 'src/message/message.service';
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { MessageErrorMessages } from '../message/message.constants';
@@ -23,7 +22,6 @@ import { MessageErrorMessages } from '../message/message.constants';
 export class BotService {
 	constructor(
 		private database: DatabaseService,
-		private messageService: MessageService,
 		@InjectBot() private bot: Telegraf
 	) {}
 
@@ -35,7 +33,8 @@ export class BotService {
 		}
 		const { key, value, caption, entities } = extractedMessage;
 		const entity = new MessageEntity({ userTgId: sender.id, text: caption, [key]: value, entities, type: key });
-		const createdMessage = await this.messageService.createMessage(entity);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const createdMessage = await this.database.messageModel.create({ data: entity as any });
 		await ctx.reply(BotStaticMessages.MESSAGE_CREATED);
 		ctx.session.awaitingNameMessage = createdMessage.id;
 	}
@@ -48,15 +47,12 @@ export class BotService {
 			return;
 		}
 		const entity = new MessageEntity({ ...message, label: name });
-		await this.messageService.updateMessage(id, entity);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		await this.database.messageModel.update({ where: { id }, data: entity as any });
 		await ctx.reply(BotStaticMessages.LABEL_SAVED);
 	}
 
 	async sendMessage(chatId: number, message: MessageEntity): Promise<void> {
-		if (message.text) {
-			await this.bot.telegram.sendMessage(chatId, message.text, { entities: message.entities });
-			return;
-		}
 		const extra = {
 			caption: message.text,
 			caption_entities: message.entities
@@ -74,7 +70,7 @@ export class BotService {
 			await this.bot.telegram.sendDocument(chatId, message.document.file_id, extra);
 			return;
 		}
-		if (message.photo) {
+		if (message.photo?.length) {
 			await this.bot.telegram.sendPhoto(chatId, message.photo[message.photo.length - 1].file_id, extra);
 			return;
 		}
@@ -84,6 +80,10 @@ export class BotService {
 		}
 		if (message.voice) {
 			await this.bot.telegram.sendVoice(chatId, message.voice.file_id, extra);
+			return;
+		}
+		if (message.text) {
+			await this.bot.telegram.sendMessage(chatId, message.text, { entities: message.entities });
 			return;
 		}
 		throw new BadRequestException(MessageErrorMessages.EMPTY_MESSAGE);
