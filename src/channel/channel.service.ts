@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ChannelModel } from '@prisma/client';
 import { AddChannelDto } from './dto/add-channel.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -31,7 +31,7 @@ export class ChannelService {
 			throw new NotFoundException(ChannelErrorMssages.NOT_FOUND);
 		}
 		if (channel.userId !== userId) {
-			throw new NotFoundException(ChannelErrorMssages.FORBIDDEN);
+			throw new ForbiddenException(ChannelErrorMssages.FORBIDDEN);
 		}
 		const deletedChannel = await this.database.channelModel.delete({ where: { id } });
 		await this.fileService.deleteImageFromUrl(deletedChannel.avatar);
