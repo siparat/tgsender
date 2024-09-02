@@ -1,4 +1,4 @@
-import { MessageModel } from '@prisma/client';
+import { MessageModel, ProccessModel } from '@prisma/client';
 import { PartialFields } from '../../types/partial-fields';
 import { MessageEntity as Message } from 'telegraf/types';
 
@@ -9,3 +9,5 @@ export type IMessageEntity = Omit<
 	>,
 	'entities'
 > & { entities?: MessageModel['entities'] | Message.AbstractMessageEntity[] };
+
+export type IProccessEntity = PartialFields<ProccessModel, 'id' | 'createdAt' | 'endedTime'>;

@@ -52,38 +52,38 @@ export class BotService {
 		await ctx.reply(BotStaticMessages.LABEL_SAVED);
 	}
 
-	async sendMessage(chatId: number, message: MessageEntity): Promise<void> {
+	async sendMessage(bot: Telegraf, chatId: number | string, message: MessageEntity): Promise<void> {
 		const extra = {
 			caption: message.text,
 			caption_entities: message.entities
 		};
 
 		if (message.animation) {
-			await this.bot.telegram.sendAnimation(chatId, message.animation.file_id, extra);
+			await bot.telegram.sendAnimation(chatId, message.animation.file_id, extra);
 			return;
 		}
 		if (message.audio) {
-			await this.bot.telegram.sendAudio(chatId, message.audio.file_id, extra);
+			await bot.telegram.sendAudio(chatId, message.audio.file_id, extra);
 			return;
 		}
 		if (message.document) {
-			await this.bot.telegram.sendDocument(chatId, message.document.file_id, extra);
+			await bot.telegram.sendDocument(chatId, message.document.file_id, extra);
 			return;
 		}
 		if (message.photo?.length) {
-			await this.bot.telegram.sendPhoto(chatId, message.photo[message.photo.length - 1].file_id, extra);
+			await bot.telegram.sendPhoto(chatId, message.photo[message.photo.length - 1].file_id, extra);
 			return;
 		}
 		if (message.video) {
-			await this.bot.telegram.sendVideo(chatId, message.video.file_id, extra);
+			await bot.telegram.sendVideo(chatId, message.video.file_id, extra);
 			return;
 		}
 		if (message.voice) {
-			await this.bot.telegram.sendVoice(chatId, message.voice.file_id, extra);
+			await bot.telegram.sendVoice(chatId, message.voice.file_id, extra);
 			return;
 		}
 		if (message.text) {
-			await this.bot.telegram.sendMessage(chatId, message.text, { entities: message.entities });
+			await bot.telegram.sendMessage(chatId, message.text, { entities: message.entities });
 			return;
 		}
 		throw new BadRequestException(MessageErrorMessages.EMPTY_MESSAGE);

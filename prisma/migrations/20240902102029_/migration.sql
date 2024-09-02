@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "ProccessModel" ALTER COLUMN "receivers" SET DATA TYPE BIGINT[],
+ALTER COLUMN "failed" SET DATA TYPE BIGINT[];

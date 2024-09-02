@@ -56,8 +56,8 @@ model ProccessModel {
     user      UserModel      @relation(fields: [userId], references: [id])
     channelId Int
     channel   ChannelModel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
-    receivers Int[]
-    failed    Int[]
+    receivers BigInt[]
+    failed    BigInt[]
     status    ProccessStatus
 }
 

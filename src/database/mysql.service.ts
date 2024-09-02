@@ -3,14 +3,14 @@ import { DatabaseProvideKeys } from './database.constants';
 import { Pool } from 'mysql2/promise';
 
 interface GetChatsIdResponse {
-	chat_id: number;
+	chat_id: bigint;
 }
 
 @Injectable()
 export class MySqlService {
 	constructor(@Inject(DatabaseProvideKeys.MY_SQL) private pool: Pool) {}
 
-	async getChatsId(): Promise<number[]> {
+	async getChatsId(): Promise<bigint[]> {
 		const connection = await this.pool.getConnection();
 		try {
 			const [response] = await connection.query(`

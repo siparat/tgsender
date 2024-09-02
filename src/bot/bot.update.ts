@@ -1,4 +1,4 @@
-import { Ctx, Hears, Message, On, Sender, Start, Update } from 'nestjs-telegraf';
+import { Ctx, Message, On, Sender, Start, Update } from 'nestjs-telegraf';
 import { BotStaticMessages } from './bot.constants';
 import { User } from 'telegraf/types';
 import { UserService } from 'src/user/user.service';
@@ -7,8 +7,6 @@ import { isUUID } from 'class-validator';
 import { DatabaseService } from 'src/database/database.service';
 import { CommonMessage, IContext } from './bot.interfaces';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { MessageModel } from '@prisma/client';
-import { MessageEntity } from 'src/message/entities/message.entity';
 
 @Update()
 export class BotUpdate {
@@ -21,13 +19,6 @@ export class BotUpdate {
 	@Start()
 	onStart(@Ctx() ctx: IContext): void {
 		ctx.reply(BotStaticMessages.START);
-	}
-
-	@Hears('send')
-	async send(@Sender() user: User): Promise<void> {
-		const message = (await this.database.messageModel.findFirst()) as MessageModel;
-		const entity = new MessageEntity(message);
-		await this.botService.sendMessage(user.id, entity);
 	}
 
 	@On('message')
