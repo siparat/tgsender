@@ -1,3 +1,4 @@
 import { ChannelModel } from '@prisma/client';
+import { PartialFields } from 'types/partial-fields';
 
-export type IChannelEntity = Omit<ChannelModel, 'id'> & { id?: number };
+export type IChannelEntity = PartialFields<ChannelModel, 'id' | 'avatar'>;

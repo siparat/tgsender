@@ -34,7 +34,9 @@ export class ChannelService {
 			throw new ForbiddenException(ChannelErrorMssages.FORBIDDEN);
 		}
 		const deletedChannel = await this.database.channelModel.delete({ where: { id } });
-		await this.fileService.deleteImageFromUrl(deletedChannel.avatar);
+		if (deletedChannel.avatar) {
+			await this.fileService.deleteImageFromUrl(deletedChannel.avatar);
+		}
 		return deletedChannel;
 	}
 }

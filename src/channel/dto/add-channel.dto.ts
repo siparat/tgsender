@@ -6,7 +6,7 @@ export class AddChannelDto {
 	@IsString()
 	name: string;
 
-	avatar: string;
+	avatar?: string;
 
 	@IsString()
 	token: string;

@@ -8,29 +8,31 @@ datasource db {
 }
 
 model UserModel {
-    id           Int            @id @default(autoincrement())
-    tgId         Int?           @unique
-    login        String         @unique
-    passwordHash String
-    token        String         @unique @default(uuid())
-    channels     ChannelModel[]
-    messages     MessageModel[]
+    id            Int             @id @default(autoincrement())
+    tgId          Int?            @unique
+    login         String          @unique
+    passwordHash  String
+    token         String          @unique @default(uuid())
+    channels      ChannelModel[]
+    messages      MessageModel[]
+    ProccessModel ProccessModel[]
 }
 
 model ChannelModel {
-    id     Int       @id @default(autoincrement())
-    name   String
-    avatar String
-    token  String
-    userId Int
-    user   UserModel @relation(references: [id], fields: [userId])
+    id         Int             @id @default(autoincrement())
+    name       String
+    avatar     String?
+    token      String
+    userId     Int
+    user       UserModel       @relation(references: [id], fields: [userId])
+    proccesses ProccessModel[]
 }
 
 model MessageModel {
-    id        Int         @id @default(autoincrement())
-    label     String?
-    userTgId  Int
-    user      UserModel   @relation(references: [tgId], fields: [userTgId])
+    id       Int       @id @default(autoincrement())
+    label    String?
+    userTgId Int
+    user     UserModel @relation(references: [tgId], fields: [userTgId])
 
     text      String?
     entities  Json[]
@@ -41,6 +43,27 @@ model MessageModel {
     voice     Json?
     document  Json?
     type      MessageType
+    processes ProccessModel[]
+}
+
+model ProccessModel {
+    id        Int            @id @default(autoincrement())
+    createdAt DateTime       @default(now())
+    endedTime DateTime?
+    messageId Int
+    message   MessageModel   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+    userId    Int
+    user      UserModel      @relation(fields: [userId], references: [id])
+    channelId Int
+    channel   ChannelModel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+    receivers Int[]
+    failed    Int[]
+    status    ProccessStatus
+}
+
+enum ProccessStatus {
+    started
+    finished
 }
 
 enum MessageType {

@@ -6,14 +6,14 @@ import { ChannelErrorMssages } from '../channel.constants';
 export class ChannelEntity {
 	id?: number;
 	name: string;
-	avatar: string;
+	avatar?: string;
 	token: string;
 	userId: number;
 
 	constructor(channel: IChannelEntity) {
 		this.id = channel.id;
 		this.name = channel.name;
-		this.avatar = channel.avatar;
+		this.avatar = channel.avatar ?? undefined;
 		this.token = channel.token;
 		this.userId = channel.userId;
 	}

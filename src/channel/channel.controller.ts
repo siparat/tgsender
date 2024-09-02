@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -44,13 +45,19 @@ export class ChannelController {
 		@User() user: UserModel,
 		@UploadedFile(
 			new ParseFilePipe({
+				fileIsRequired: false,
 				validators: [new FileTypeValidator({ fileType: 'image' }), new MaxFileSizeValidator({ maxSize: 1.5 * 1024 * 1024 })]
 			})
 		)
-		file: Express.Multer.File
+		file?: Express.Multer.File
 	): Promise<ChannelModel> {
-		const { url } = await this.fileService.saveImage(file);
-		dto.avatar = url;
+		if (dto.avatar) {
+			throw new BadRequestException(ChannelErrorMssages.AVATAR_BAD_REQUEST);
+		}
+		if (file) {
+			const { url } = await this.fileService.saveImage(file);
+			dto.avatar = url;
+		}
 		return this.channelService.addChannel(dto, user.id);
 	}
 
