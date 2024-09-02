@@ -3,7 +3,34 @@ services:
   database:
     image: postgres:latest
     container_name: database
+    volumes:
+      - database:/var/lib/postgresql/data
+    networks:
+      - main
     ports:
       - 5432:5432
     env_file:
       - .env
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    depends_on:
+      - database
+    networks:
+      - main
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - uploads:/opt/app/uploads
+
+volumes:
+  uploads:
+
+  database:
+
+networks:
+  main:
+    driver: bridge

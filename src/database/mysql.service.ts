@@ -14,9 +14,9 @@ export class MySqlService {
 		const connection = await this.pool.getConnection();
 		try {
 			const [response] = await connection.query(`
-			SELECT DISTINCT chat_id
-			FROM chat_history
-		`);
+				SELECT DISTINCT chat_id
+				FROM chat_history
+			`);
 			return (response as GetChatsIdResponse[]).map(({ chat_id }) => chat_id);
 		} catch (error) {
 			Logger.error(error);
